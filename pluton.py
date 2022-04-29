@@ -63,6 +63,13 @@ async def on_ready():
     pass
 
 
+async def removeOldMessage(message):
+    async for messageItem in message.channel.history(limit=1000):
+        if not messageItem.id == message.id and not messageItem.pinned:
+            await messageItem.delete()
+    pass
+
+
 @client.event
 async def on_message(message):
     if checkAutorNotBot(message):
@@ -70,6 +77,9 @@ async def on_message(message):
             print(message.guild.banner)
             guild = message.guild
             await guild.set_banner_url(message.attachment[0].proxy_url)
+        if message.content.startswith("-clear"):
+            await message.delete()
+            await removeOldMessage(message)
         if message.content.startswith("-get_info"):
             get_info(message)
         if message.content.startswith("-set_start_channel"):
